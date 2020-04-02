@@ -12,6 +12,7 @@ def find_and_replace(file, word, replacement):
     f.write(text.replace(word, replacement))
 
 def setup():
+    server_name = input("What is the server's name? ")
     os.chdir(server_dir)
     bat_file = open(server_dir+"start.bat","w")
     bat_file.write("java -Xmx2048M -Xms1024M -jar server.jar nogui") 
@@ -19,6 +20,10 @@ def setup():
     subprocess.call(server_dir+"start.bat")
     find_and_replace(server_dir+"eula.txt", "false", "true")
     print("Agreed to EULA")
+    try:
+        find_and_replace(server_dir+"server.properties", "motd=A Minecraft Server", "motd="+server_name)
+    except Exception:
+        print("failed, for some reason ("+Exception+")" )
     answerStart = input("Wanna start the server right away or change the settings first? [start/conf]")
     def askOption():
         if answerStart == "start":
