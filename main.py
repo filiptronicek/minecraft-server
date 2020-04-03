@@ -6,6 +6,21 @@ import shutil
 dir_path = os.path.dirname(os.path.realpath(__file__))
 server_dir = dir_path+"/server/"
 
+""" Description
+    :type file:
+    :param file:
+    
+    :type word:
+    :param word: - what should be replaced
+    
+    :type replacement:
+    :param replacement: - with what the word should be replaced
+    
+    :raises:
+    
+    :rtype:
+"""
+
 def find_and_replace(file, word, replacement):
   with open(file, 'r+') as f:
     text = f.read()
