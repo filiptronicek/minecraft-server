@@ -1,7 +1,9 @@
-from tqdm import tqdm
-import requests
-import os, subprocess
+import os
 import shutil
+import subprocess
+
+import requests
+from tqdm import tqdm
 
 dir_path = os.path.dirname(os.path.realpath(__file__))
 server_dir = dir_path+"/server/"
