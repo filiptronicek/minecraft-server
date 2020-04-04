@@ -63,9 +63,24 @@ def setup():
     ask_option()
 
 
+def get_server_jar_url(version_):
+    """
+    Gets the latest server.jar for specified Minecraft version
+    :param version_: Minecraft version
+    :return: Download url in the form of https://launcher.mojang.com/v1/objects/.../server.jar
+    """
+    versions_manifest = requests.get("https://launchermeta.mojang.com/mc/game/version_manifest.json").json()
+    version_manifest = list(filter(lambda a: a["id"] == version_, versions_manifest["versions"]))[0]
+    download_url = requests.get(version_manifest["url"]).json()
+    return download_url["downloads"]["server"]["url"]
+
+
 if not os.path.exists("server/server.jar"):
     chunk_size = 1024
-    url = "https://launcher.mojang.com/v1/objects/bb2b6b1aefcd70dfd1892149ac3a215f6c636b07/server.jar"
+
+    version = input("Please send what version of Minecraft you want to use: ")
+
+    url = get_server_jar_url(version)
 
     req = requests.get(url, stream=True)
     total_size = int(req.headers["content-length"])
