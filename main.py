@@ -1,27 +1,18 @@
 import os
 import shutil
 import subprocess
+from typing import Optional, Any
 
 import requests
 from tqdm import tqdm
 
+from versions.paper_mc import PaperMC
+from versions.vanilla import Vanilla
+
 dir_path = os.path.dirname(os.path.realpath(__file__))
 server_dir = dir_path + "/server/"
 
-""" Description
-    :type file:
-    :param file:
-    
-    :type word:
-    :param word: - what should be replaced
-    
-    :type replacement:
-    :param replacement: - with what the word should be replaced
-    
-    :raises:
-    
-    :rtype:
-"""
+versions = [Vanilla, PaperMC]
 
 
 def find_and_replace(file_, word, replacement):
@@ -63,24 +54,22 @@ def setup():
     ask_option()
 
 
-def get_server_jar_url(version_):
-    """
-    Gets the latest server.jar for specified Minecraft version
-    :param version_: Minecraft version
-    :return: Download url in the form of https://launcher.mojang.com/v1/objects/.../server.jar
-    """
-    versions_manifest = requests.get("https://launchermeta.mojang.com/mc/game/version_manifest.json").json()
-    version_manifest = list(filter(lambda a: a["id"] == version_, versions_manifest["versions"]))[0]
-    download_url = requests.get(version_manifest["url"]).json()
-    return download_url["downloads"]["server"]["url"]
+def default_input(prompt: str, default: Optional[Any], strip: bool = True):
+    resp = input(prompt)
+    if len(resp) != 0:
+        return resp.strip() if strip else resp
+    return default
 
 
 if not os.path.exists("server/server.jar"):
     chunk_size = 1024
 
-    version = input("Please send what version of Minecraft you want to use: ")
+    server_type = default_input("Choose server type (Vanilla or PaperMC, by default vanilla): ", "vanilla").lower()
+    assert server_type in map(lambda ver: ver.__name__.lower(), versions)
 
-    url = get_server_jar_url(version)
+    version = default_input("Please send what version of Minecraft you want to use (default 1.15.2): ", "1.15.2")
+
+    url = list(filter(lambda a: a.__name__.lower() == server_type, versions))[0]().get_download_url(version)
 
     req = requests.get(url, stream=True)
     total_size = int(req.headers["content-length"])
