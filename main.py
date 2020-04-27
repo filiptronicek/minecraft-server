@@ -25,7 +25,7 @@ def setup():
     server_name = input("What is the server's name? ")
     os.chdir(server_dir)
     bat_file = open(server_dir + "start.bat", "w")
-    bat_file.write("java -Xmx1024M -Xms1024M -jar server.jar nogui")
+    bat_file.write("java -Xmx2048M -Xms1024M -jar server.jar nogui")
     bat_file.close()
     subprocess.call(server_dir + "start.bat")
     find_and_replace(server_dir + "eula.txt", "false", "true")
