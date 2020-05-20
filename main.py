@@ -10,10 +10,15 @@ from tqdm import tqdm
 from versions.paper_mc import PaperMC
 from versions.vanilla import Vanilla
 
+from link import release
+
 dir_path = os.path.dirname(os.path.realpath(__file__))
 server_dir = dir_path + "/server/"
 
 versions = [Vanilla, PaperMC]
+
+def get_newest_version():
+    requests.get("https://launchermeta.mojang.com/mc/game/version_manifest.json")
 
 
 def find_and_replace(file_, word, replacement):
@@ -83,7 +88,8 @@ if not os.path.exists("server/server.jar"):
     server_type = default_input("Choose server type (Vanilla or PaperMC, by default vanilla): ", "vanilla").lower()
     assert server_type in map(lambda ver: ver.__name__.lower(), versions)
 
-    version = default_input("Please send what version of Minecraft you want to use (default 1.15.2): ", "1.15.2")
+    releases = release()
+    version = default_input("Please send what version of Minecraft you want to use (default "+releases[1]+"): ", releases[1])
 
     url = list(filter(lambda a: a.__name__.lower() == server_type, versions))[0]().get_download_url(version)
 
