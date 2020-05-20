@@ -89,7 +89,10 @@ if not os.path.exists("server/server.jar"):
     assert server_type in map(lambda ver: ver.__name__.lower(), versions)
 
     releases = release()
-    version = default_input("Please send what version of Minecraft you want to use (default "+releases[1]+"): ", releases[1])
+    version = default_input("Please send what version of Minecraft you want to use (default "+releases[1]+") [snapshot for the latest snapshot ("+releases[0]+")]: ", releases[1])
+
+    if version == "snapshot":
+        version = releases[0]
 
     url = list(filter(lambda a: a.__name__.lower() == server_type, versions))[0]().get_download_url(version)
 
