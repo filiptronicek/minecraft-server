@@ -17,8 +17,22 @@ server_dir = dir_path + "/server/"
 
 versions = [Vanilla, PaperMC]
 
-def get_newest_version():
-    requests.get("https://launchermeta.mojang.com/mc/game/version_manifest.json")
+def update(vrs:str):
+    if vrs == release():
+        pass
+    else:
+        req = requests.get(url, stream=True)
+        total_size = int(req.headers["content-length"])
+
+        with open("server.jar", "wb") as file:
+            for data in tqdm(
+                iterable=req.iter_content(chunk_size=chunk_size),
+                total=total_size / chunk_size,
+                unit="KB",
+            ):
+                file.write(data)
+        shutil.move(dir_path + "/server.jar", server_dir + "server.jar")
+        setup()
 
 
 def find_and_replace(file_, word, replacement):
@@ -89,18 +103,27 @@ if not os.path.exists("server/server.jar"):
     assert server_type in map(lambda ver: ver.__name__.lower(), versions)
 
     releases = release()
-    version = default_input("Please send what version of Minecraft you want to use (default "+releases[1]+") [snapshot for the latest snapshot ("+releases[0]+")]: ", releases[1])
+    version = default_input("Please send what version of Minecraft you want to use (default "+releases[1]+") [snapshot for the latest snapshot ("+releases[0]+"), release for auto-updating release version]: ", releases[1])
+
+    if not os.path.isdir("server/"):
+        os.mkdir("server")
 
     if version == "snapshot":
         version = releases[0]
+        versionType =  "snapshot"
+    if version == "release":
+        version = releases[1]
+        versionType = "release"
+
+    if not os.path.exists("server/version.txt"):
+        if versionType:
+            with open("server/version.txt", "w") as f:
+                f.write("type:"+versionType+"\nversion:"+version)
 
     url = list(filter(lambda a: a.__name__.lower() == server_type, versions))[0]().get_download_url(version)
 
     req = requests.get(url, stream=True)
     total_size = int(req.headers["content-length"])
-
-    if not os.path.isdir("server/"):
-        os.mkdir("server")
 
     with open("server.jar", "wb") as file:
         for data in tqdm(
