@@ -17,11 +17,14 @@ server_dir = dir_path + "/server/"
 
 versions = [Vanilla, PaperMC]
 
+chunk_size = 1024
+
 def update(vrs:str):
-    if vrs == release():
+    nwst = release()
+    if vrs == nwst[0] or vrs == nwst[1]:
         pass
     else:
-        req = requests.get(url, stream=True)
+        req = requests.get(nwst, stream=True)
         total_size = int(req.headers["content-length"])
 
         with open("server.jar", "wb") as file:
@@ -32,8 +35,6 @@ def update(vrs:str):
             ):
                 file.write(data)
         shutil.move(dir_path + "/server.jar", server_dir + "server.jar")
-        setup()
-
 
 def find_and_replace(file_, word, replacement):
     with open(file_, "r+") as f:
@@ -97,8 +98,6 @@ def default_input(prompt: str, default: Optional[Any], strip: bool = True):
 
 
 if not os.path.exists("server/server.jar"):
-    chunk_size = 1024
-
     server_type = default_input("Choose server type (Vanilla or PaperMC, by default vanilla): ", "vanilla").lower()
     assert server_type in map(lambda ver: ver.__name__.lower(), versions)
 
