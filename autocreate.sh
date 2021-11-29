@@ -14,5 +14,5 @@ fi
 # run the server
 docker run -d -v /root:/data \
     -e TYPE=SPIGOT \
-    -e EULA=TRUE --name mc itzg/minecraft-server
+    -e EULA=TRUE --name mc itzg/minecraft-server \
     -p 25565:25565
